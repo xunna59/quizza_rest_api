@@ -10,8 +10,7 @@ class UserModel {
             );
             return result.rows[0];
         } catch (error) {
-            console.error('Error creating user:', error);
-            throw error;
+            throw new Error(` ${error.message}`);
         }
     }
 
@@ -24,8 +23,7 @@ class UserModel {
             );
             return result.rows[0];
         } catch (error) {
-            console.error('Error finding user by email:', error);
-            throw error;
+            throw new Error(` ${error.message}`);
         }
     }
 }

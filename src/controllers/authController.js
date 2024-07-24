@@ -20,7 +20,7 @@ const register = async (req, res, next) => {
 
     try {
         const user = await userModel.createUser(first_name, last_name, email, hashedPassword);
-        res.status(201).json(user);
+        res.status(201).json({ success: true, message: 'User created successfully', user });
     } catch (error) {
         next(error);
     }
@@ -42,26 +42,35 @@ const login = async (req, res, next) => {
     try {
         const user = await userModel.findUserByEmail(email);
         if (!user) {
-            return res.status(400).json({ error: 'Invalid Login credentials' });
+            return res.status(400).json({ error: 'Invalid login credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid Login credentials' });
+            return res.status(400).json({ error: 'Invalid login credentials' });
         }
 
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+        // Set the token as an HTTP-Only cookie
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.json({ message: 'Login successful', token: token });
+
     } catch (error) {
         next(error);
     }
 };
 
 const authenticateToken = (req, res, next) => {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const authHeader = req.header('Authorization');
+
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
 
     if (!token) {
-        return res.status(401).json({ error: 'Access denied' });
+        return res.status(401).json({ error: 'Access denied. Invalid token format.' });
     }
 
     try {
