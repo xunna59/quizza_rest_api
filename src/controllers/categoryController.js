@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const CategoryModel = require('../models/categoryModel');
 const categoryModel = new CategoryModel();
 
-
+// Function to create Quiz Category
 const createQuizCategory = async (req, res, next) => {
     // Validate Request 
     const errors = validationResult(req);
@@ -19,8 +19,7 @@ const createQuizCategory = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
-
+};// Function to handle fetch all Quiz categories
 const getAllCategories = async (req, res, next) => {
     try {
         const categories = await categoryModel.getAllCategories();
@@ -30,6 +29,7 @@ const getAllCategories = async (req, res, next) => {
     }
 };
 
+// Export the functions to be used in routes
 
 module.exports = {
     createQuizCategory,

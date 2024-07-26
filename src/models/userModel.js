@@ -1,7 +1,7 @@
 const pool = require('../config/db_config');
 
 class UserModel {
-    // Create a new user
+    // Create a new user Function
     async createUser(first_name, last_name, email, password) {
         try {
             const result = await pool.query(
@@ -14,7 +14,7 @@ class UserModel {
         }
     }
 
-    // Find a user by email
+    // Find a user by emailFunction
     async findUserByEmail(email) {
         try {
             const result = await pool.query(

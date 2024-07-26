@@ -27,8 +27,70 @@ class QuestionModel {
 
     async fetchQuestions() {
         try {
-            const result = await pool.query('SELECT * FROM quiz_questions');
-            return result.rows;
+            const result = await pool.query(`
+                SELECT q.id as question_id, q.question_text, o.id as option_id, o.option_text, o.is_correct 
+                FROM quiz_questions q 
+                LEFT JOIN options o ON q.id = o.question_id
+            `);
+
+            const questions = {};
+
+            result.rows.forEach(row => {
+                if (!questions[row.question_id]) {
+                    questions[row.question_id] = {
+                        question_id: row.question_id,
+                        question_text: row.question_text,
+                        options: []
+                    };
+                }
+                questions[row.question_id].options.push({
+                    option_id: row.option_id,
+                    option_text: row.option_text,
+                    is_correct: row.is_correct
+                });
+            });
+
+            return Object.values(questions);
+        } catch (error) {
+            throw new Error(` ${error.message}`);
+        }
+    }
+
+    async fetchQuestionById(id) {
+        try {
+            const result = await pool.query(
+                'SELECT * FROM quiz_questions WHERE id = $1',
+                [id]
+            );
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(` ${error.message}`);
+        }
+    }
+
+    async fetchOptionById(id) {
+        try {
+            const result = await pool.query(
+                'SELECT * FROM options WHERE id = $1',
+                [id]
+            );
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(` ${error.message}`);
+        }
+    }
+
+    async deleteQuestionById(id) {
+        try {
+            await pool.query(
+                'DELETE FROM options WHERE question_id = $1',
+                [id]
+            );
+            await pool.query(
+                'DELETE FROM quiz_questions WHERE id = $1',
+                [id]
+            );
+            return { success: true, message: 'Question and its options deleted successfully' };
         } catch (error) {
             throw new Error(` ${error.message}`);
         }

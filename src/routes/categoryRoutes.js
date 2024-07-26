@@ -10,7 +10,7 @@ router.get('/', authController.authenticateToken, categoryController.getAllCateg
 router.post('/',
     body('category_name').notEmpty().withMessage('Category Name is required.'),
 
-    categoryController.createQuizCategory
+    authController.authenticateToken, categoryController.createQuizCategory
 );
 
 
