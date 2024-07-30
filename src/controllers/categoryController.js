@@ -29,10 +29,26 @@ const getAllCategories = async (req, res, next) => {
     }
 };
 
+// Function to delete a Quiz Category
+const deleteCategory = async (req, res, next) => {
+    const { category_id } = req.params;
+
+    try {
+        const category = await categoryModel.deleteCategory(category_id);
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+        res.status(200).json({ success: true, message: 'Category deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Export the functions to be used in routes
 
 module.exports = {
     createQuizCategory,
-    getAllCategories
+    getAllCategories,
+    deleteCategory
 
 };
