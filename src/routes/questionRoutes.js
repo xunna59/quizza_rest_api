@@ -15,7 +15,7 @@ router.post(
     body('options.*.option_text').notEmpty().withMessage('Option Text is required.'),
     body('options.*.is_correct').isBoolean().withMessage('Is Correct must be a boolean.'),
     // Authenticate the request
-    authController.authenticateToken,
+   
     // Call the controller method to handle question creation
     questionController.createQuestion
 );
